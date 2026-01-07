@@ -93,8 +93,7 @@ def get_decision(profile_name: str) -> DecisionContract:
     if profile_name not in DECISION_CONTRACT:
         available_profiles = ", ".join(sorted(DECISION_CONTRACT.keys()))
         raise ValueError(
-            f"Unknown profile: '{profile_name}'. "
-            f"Available profiles: {available_profiles}"
+            f"Unknown profile: '{profile_name}'. " f"Available profiles: {available_profiles}"
         )
 
     return DECISION_CONTRACT[profile_name]
@@ -112,5 +111,3 @@ def get_available_profiles() -> list[str]:
         ['dev-internal', 'dev-public', 'prod-internal-critical', 'prod-public-critical']
     """
     return sorted(DECISION_CONTRACT.keys())
-
-

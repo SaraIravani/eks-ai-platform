@@ -1,8 +1,10 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
-from typing import Dict
 
-from infra_platform.core.decision_engine import get_decision, DECISION_CONTRACT
+from infra_platform.core.decision_engine import DECISION_CONTRACT, get_decision
+from infra_platform.core.logging_config import logger
 
 
 class DecisionResponse(BaseModel):
@@ -36,12 +38,23 @@ class ProfileListResponse(BaseModel):
     total: int
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifespan context manager for startup and shutdown events."""
+    # Startup
+    logger.info("EKS Decision Engine API starting up")
+    yield
+    # Shutdown
+    logger.info("EKS Decision Engine API shutting down")
+
+
 app = FastAPI(
     title="EKS Decision Engine API",
     description="AI-driven decision engine for Amazon EKS infrastructure configuration",
     version="0.1.0",
     docs_url="/docs",
     redoc_url="/redoc",
+    lifespan=lifespan,
 )
 
 
@@ -64,6 +77,7 @@ def list_profiles():
     with the decision endpoint.
     """
     profiles = list(DECISION_CONTRACT.keys())
+    logger.info(f"Listed {len(profiles)} available profiles")
     return ProfileListResponse(profiles=profiles, total=len(profiles))
 
 
@@ -109,10 +123,12 @@ def get_decision_by_profile(profile_name: str):
         HTTPException: 404 error if the profile name is not found
     """
     try:
+        logger.info(f"Fetching decision for profile: {profile_name}")
         decision_data = get_decision(profile_name)
+        logger.info(f"Successfully retrieved decision for profile: {profile_name}")
         return ProfileDecisionResponse(
             profile=profile_name, decision=DecisionResponse(**decision_data)
         )
     except ValueError as e:
+        logger.warning(f"Profile not found: {profile_name}")
         raise HTTPException(status_code=404, detail=str(e))
-

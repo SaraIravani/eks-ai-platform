@@ -6,10 +6,11 @@ including profile retrieval and error handling.
 """
 
 import pytest
+
 from infra_platform.core.decision_engine import (
-    get_decision,
-    get_available_profiles,
     DECISION_CONTRACT,
+    get_available_profiles,
+    get_decision,
 )
 
 
@@ -75,9 +76,9 @@ class TestGetDecision:
         }
 
         for profile_name, decision in DECISION_CONTRACT.items():
-            assert set(decision.keys()) == required_keys, (
-                f"Profile '{profile_name}' missing required keys"
-            )
+            assert (
+                set(decision.keys()) == required_keys
+            ), f"Profile '{profile_name}' missing required keys"
 
 
 class TestGetAvailableProfiles:
@@ -106,4 +107,3 @@ class TestGetAvailableProfiles:
 if __name__ == "__main__":
     # Run tests if executed directly
     pytest.main([__file__, "-v"])
-
