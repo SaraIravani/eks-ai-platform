@@ -1,4 +1,4 @@
-from decision_engine import get_decision
+from infra_platform.core.decision_engine import get_decision
 
 
 def test_dev_public():
