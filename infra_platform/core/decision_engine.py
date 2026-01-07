@@ -39,6 +39,6 @@ def get_decision(profile_name: str) -> dict:
     if profile_name not in DECISION_CONTRACT:
         raise ValueError(f"Unknown profile: {profile_name}")
 
-    return DECISION_CONTRACT[profile_name]
+    return DECISION_CONTRACT[profile_name].copy()
 
 
